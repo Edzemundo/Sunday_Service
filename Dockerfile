@@ -1,11 +1,12 @@
+FROM python:latest
 
-FROM python:3
+WORKDIR /app
 
-WORKDIR /usr/src/app
-
-COPY requirements.txt ./
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY Sunday_Service.py .
 
-CMD [ "python", "./your-daemon-or-script.py" ]
+RUN apt update && apt install ffmpeg -y
+
+CMD [ "python", "Sunday_Service.py" ]
