@@ -6,8 +6,12 @@ import ffmpeg
 # import subprocess
 from yt_dlp import YoutubeDL
 
+
 def menu():
     print("""
+          
+        Sunday Service
+    
     1. Change video format
     2. Extract Audio
     3. Bind Audio
@@ -21,22 +25,21 @@ def menu():
 
     match command:
         case 1:
-                change_video_format()
+            change_video_format()
         case 2:
-                extract_audio()
+            extract_audio()
         case 3:
-                bind_audio()
+            bind_audio()
         case 4:
-                change_gain()
+            change_gain()
         case 5:
-                trim_video()
+            trim_video()
         case 6:
-                generate_thumbnails()
+            generate_thumbnails()
         case 7:
-                download_video()
+            download_video()
         case 0:
-                exit()
-
+            exit()
 
 
 def change_video_format():
@@ -274,11 +277,17 @@ def download_video():
 
     Note:
     - The download location is obtained via user input. If left blank, the current working directory is used.
+    - The filename is obtained from video info from the given url. If left blank, the original filename is used.
     - The download link is obtained via user input.
     - The video is downloaded in the best available format.
     - The output template for the downloaded file is set to "%(title)s.%(ext)s".
     """
-    fileLocation = input("Enter video download location (leave blank for CWD): ")
+    fileLocation = input(
+        "Enter video download location (leave blank for CWD) - ignore filename: "
+    )
+    fileName = input(
+        "Enter desired filename (leave blank for default) - ignore extension: "
+    )
     downloadLink = input("Enter download link: ")
 
     ydl_options = {
@@ -286,39 +295,75 @@ def download_video():
         "outtmpl": "%(title)s.%(ext)s",
     }
 
-    if os.getcwd() == fileLocation or len(fileLocation) == 0:
-        YoutubeDL(ydl_options).download([downloadLink])
-        # subprocess.run(f"yt-dlp {downloadLink} -o {fileName}", shell=True)
+    if len(fileLocation) == 0:
+        fileLocation = os.getcwd()
 
-    else:
-        with YoutubeDL(ydl_options) as ydl:
-            YoutubeDL(ydl_options).download([downloadLink])
+    with YoutubeDL(ydl_options) as ydl:
+        if os.path.exists(fileLocation):
+            if len(downloadLink) != 0:
+                YoutubeDL(ydl_options).download([downloadLink])
+            else:
+                raise ValueError("Error: Download link not provided.")
             # subprocess.run(f"yt-dlp {downloadLink} -o {fileName}", shell=True)
-            video_filename = ydl.prepare_filename(
+            original_filename = ydl.prepare_filename(
                 ydl.extract_info(downloadLink, download=False)
             )
-            shutil.move(f"{video_filename}", f"{fileLocation}")
+            if os.getcwd() == fileLocation and len(str(fileName)) != 0:
+                shutil.move(
+                    original_filename, f"{fileName}.{original_filename.split('.')[-1]}"
+                )
+                print(
+                    f"\nFile renamed to: {fileName}.{original_filename.split('.')[-1]}"
+                )
+
+            elif (
+                os.getcwd() != fileLocation
+                and len(fileLocation) > 0
+                and len(fileName) > 0
+            ):
+                shutil.move(
+                    original_filename,
+                    f"{os.path.join(fileLocation, fileName)}.{original_filename.split('.')[-1]}",
+                )
+                print(
+                    f"\nFile downloaded to: {os.path.join(fileLocation, fileName)}.{original_filename.split('.')[-1]}"
+                )
+
+            else:
+                shutil.move(
+                    original_filename, os.path.join(fileLocation, original_filename)
+                )
+                print(
+                    f"\nFile downloaded to: {os.path.join(fileLocation, fileName)}.{original_filename.split('.')[-1]}"
+                )
+        else:
+            print("\nDownload location not found.")
+
 
 def exit():
     """
     Exits.
-    
+
     This function exits the program.
-    
+
     Parameters:
     None. Cuz you're exiting.
-    
+
     Returns:
     None. Cuz you've exited.
-    
+
     Note:
     - Bye-bye for now.
-    
+
     """
-    print("Exiting...")
+    print("\nExiting...")
     sys.exit()
 
 
 if __name__ == "__main__":
     while True:
-        menu()
+        try:
+            menu()
+
+        except KeyboardInterrupt:
+            exit()

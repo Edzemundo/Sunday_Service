@@ -23,12 +23,14 @@ Before getting started, make sure you have the following installed:
 ## 📦 Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/Sunday_Service.git
    cd Sunday_Service
    ```
 
 2. Install required dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -36,6 +38,7 @@ Before getting started, make sure you have the following installed:
 ## 🚀 Usage
 
 Launch Sunday_Service by running:
+
 ```bash
 python Sunday_Service.py
 ```
@@ -56,6 +59,7 @@ Simply enter the number corresponding to your desired operation and follow the p
 ## 📝 Examples
 
 ### Converting Video Format
+
 ```bash
 1. Select option 1 (Change video format)
 2. Enter input path: /path/to/your/video.mp4
@@ -63,6 +67,7 @@ Simply enter the number corresponding to your desired operation and follow the p
 ```
 
 ### Extracting Audio
+
 ```bash
 1. Select option 2 (Extract Audio)
 2. Enter input path: /path/to/your/video.mp4
@@ -70,12 +75,13 @@ Simply enter the number corresponding to your desired operation and follow the p
 ```
 
 ### Downloading Video
+
 ```bash
 1. Select option 7 (Download Video)
 2. Enter download location (or press Enter for current directory)
-3. Enter video URL
+3. Ender download filename (or press Enter for default name from URL)
+4. Enter video URL
 ```
-
 
 ## 📄 License
 
@@ -92,3 +98,4 @@ If you have any questions or feedback, please reach out:
 <div align="center">
 Did this as a personal project - Not a software engineer - so any feedback is welcome. This README was very much made with an LLM 🫡.
 </div>
+
