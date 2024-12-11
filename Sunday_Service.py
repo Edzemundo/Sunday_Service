@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import ffmpeg
+import subprocess
 
 # import subprocess
 from yt_dlp import YoutubeDL
@@ -301,7 +302,12 @@ def download_video():
     with YoutubeDL(ydl_options) as ydl:
         if os.path.exists(fileLocation):
             if len(downloadLink) != 0:
-                YoutubeDL(ydl_options).download([downloadLink])
+                try:
+                    YoutubeDL(ydl_options).download([downloadLink])
+                except Exception as e:
+                    print("Python import download method failed, using terminal process")
+                    subprocess.run(f"yt-dlp {downloadLink}")
+                    return
             else:
                 raise ValueError("Error: Download link not provided.")
             # subprocess.run(f"yt-dlp {downloadLink} -o {fileName}", shell=True)
