@@ -39,11 +39,16 @@ def menu():
             generate_thumbnails()
         case 7:
             download_video()
+        case 712:
+            video_filename = download_video()
+            new_video_filename = change_video_format(filename=video_filename)
+            extract_audio(filename=new_video_filename)
+            os.remove(video_filename)
         case 0:
             exit()
 
 
-def change_video_format():
+def change_video_format(**kwaargs):
     """
     Change the format of a video file using ffmpeg.
 
@@ -55,25 +60,30 @@ def change_video_format():
     Returns:
         None
     """
-    fileLocation = input("Enter input filepath + extension: ")
+    if kwaargs.get('filename') is None:
+        fileLocation = input("Enter input filepath + extension: ")
+    else:
+        fileLocation = kwaargs['filename']
     fileExtensionInput = fileLocation.split(".")[-1]
     fileExtensionOutput = input("Enter container of output: ")
     if "." in fileExtensionOutput:
         fileExtensionOutput = fileExtensionOutput.replace(".", "")
-
+    outputFilename = fileLocation.replace(f".{fileExtensionInput}", "."+fileExtensionOutput)
     (
         ffmpeg.input(fileLocation)
         .output(
-            f"{fileLocation.replace(f".{fileExtensionInput}", "."+fileExtensionOutput)}",
+            f"{outputFilename}",
             vcodec="copy",
             acodec="copy",
         )
         .run(overwrite_output=True)
     )
+
+    return outputFilename
     # subprocess.run(f"ffmpeg -i {fileLocation} {fileLocation.replace(f".{fileExtensionInput}", fileExtensionOutput)}", shell=True)
 
 
-def extract_audio():
+def extract_audio(**kwaargs):
     """
     Extract audio from a video file using ffmpeg.
 
@@ -85,8 +95,11 @@ def extract_audio():
     Returns:
         None
     """
-    fileInputLocation = input("Enter input filepath + extension: ")
-    fileOutputName = input("Enter output filename + extension: ")
+    if kwaargs.get('filename') is None:
+        fileInputLocation = input("Enter audio input filepath + extension: ")
+    else:
+        fileInputLocation = kwaargs['filename']
+    fileOutputName = input("Enter audio output filename + extension: ")
 
     (
         ffmpeg.input(fileInputLocation)
@@ -292,7 +305,7 @@ def download_video():
     downloadLink = input("Enter download link: ")
 
     ydl_options = {
-        "format": "best",
+        "format": "bestvideo+bestaudio",
         "outtmpl": "%(title)s.%(ext)s",
     }
 
@@ -306,7 +319,7 @@ def download_video():
                     YoutubeDL(ydl_options).download([downloadLink])
                 except Exception as e:
                     print("Python import download method failed, using terminal process")
-                    subprocess.run(f"yt-dlp {downloadLink}")
+                    subprocess.run(f"yt-dlp {downloadLink}", shell=True)
                     return
             else:
                 raise ValueError("Error: Download link not provided.")
@@ -344,6 +357,8 @@ def download_video():
                 )
         else:
             print("\nDownload location not found.")
+        
+        return original_filename    
 
 
 def exit():
